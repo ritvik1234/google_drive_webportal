@@ -1,0 +1,83 @@
+{% extends "intro/header.html" %}
+
+{% block upload %} class="active" {% endblock %}
+
+{% block login %}
+	{% if user.is_authenticated %}
+		<a class="article">{{user.email}}</a>
+		<a href="/acc/logout?next=/" class="download">Logout</a> 
+	{% else %}
+		<a href="/accounts/google/login/" class="download">Login</a> 
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	<!--<snap id="upload_button" style="display: block;"><a href="done_uploading/" style="text-decoration: none;"> Upload </a></snap>-->
+<div class="row">
+	<div class="col-md-6">
+	<form id="myform" method="post" enctype="multipart/form-data" action="done_uploading/">
+		<div class="form-group">
+			{% csrf_token %}
+			<div class="form-row">
+				<div class="form-group col-md-9">
+					<input type="text" class="form-control" name="course_name" placeholder="Course Name" required>
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-group col-md-4">
+					<input type="text" class="form-control" name="course_code" placeholder="Course Code" required>
+				</div>
+				<div class="form-group col-md-5">
+						<select name="paper_type" class="form-control">
+								<option value="M">Mid Semester</option>
+								<option value="E">End Semester</option>
+								<option value="Q">Quiz</option>
+						</select>
+				</div>
+			</div>
+			<div class="form-row">
+					<div class="form-group col-md-4">
+						<input type="text" class="form-control" name="paper_year" placeholder="Year" required>
+					</div>
+			</div>
+			<div class="form-row">
+					<div class="form-group col-md-6">
+							<div class="custom-file">
+						<input type="file" class="custom-file-input" name="myfile" required>
+						<label style="white-space: nowrap;overflow: hidden;" class="custom-file-label" for="validatedCustomFile">Choose file...</label>
+						</div>
+					</div>
+					<div class="form-group col-md-3">
+							<button id="uploadbt" class="btn btn-primary" type="submit">Upload</button>
+							
+					</div>
+			</div>
+		</div>
+	  </form>
+	</div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+	$(document).on('click', '#uploadbt', function(event){
+		if(!ValidateForm())
+				$(this).html('Upload <i class="fas fa-spinner fa-spin"></i>');
+	});
+
+	function ValidateForm() {
+		var formInvalid = false;
+		$('#myform input').each(function() {
+		if ($(this).val() === '') {
+			formInvalid = true;
+		}
+		});
+		return formInvalid;
+	}
+	$('.custom-file input').on('change',function(){
+		var fileName = $(this).val();
+		var farr = fileName.split(/[\\/]+/);
+		$('.custom-file-label').html(farr[farr.length-1]);
+	});
+</script>
+{% endblock	%}
